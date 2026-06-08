@@ -1,0 +1,89 @@
+@startuml amt
+
+scale 2
+
+abstract class MemoryManager <BlockType> { }
+
+abstract class SystemMemoryManager <BlockType> { }
+
+abstract class CompactMemoryManager <BlockType> { }
+
+abstract class CompactOperationMemoryManager <BlockType> { }
+
+class CompactMemoryTrivialManager <BlockType> { }
+
+class CompactMemoryObjectManager <BlockType> { }
+
+
+hide MemoryManager fields
+hide SystemMemoryManager fields
+hide CompactMemoryManager fields
+hide CompactOperationMemoryManager fields
+hide CompactMemoryTrivialManager fields
+hide CompactMemoryObjectManager fields
+
+hide MemoryManager methods
+hide SystemMemoryManager methods
+hide CompactMemoryManager methods
+hide CompactOperationMemoryManager methods
+hide CompactMemoryTrivialManager methods
+hide CompactMemoryObjectManager methods
+
+
+class MemoryBlock<DataType> {
+    + data: DataType
+    + operator==(other: MemoryBlock<DataType>): bool
+    + operator!=(other: MemoryBlock<DataType>): bool
+}
+
+abstract class AbstractMemoryType {
+    + {abstract} ~AbstractMemoryType()
+    + {abstract} size(): size_t <<const>>
+    + {abstract} isEmpty(): bool <<const>>
+    + {abstract} clear(): void
+    + {abstract} assign(other: AbstractMemoryType&): AbstractMemoryType&
+    + {abstract} equals(other: AbstractMemoryType&): bool <<const>>
+}
+
+abstract class AbstractMemoryStructure<BlockType> {
+    + size(): size_t <<const>> <<override>>
+    + isEmpty(): bool <<const>> <<override>>
+    # AbstractMemoryStructure(memoryManager: MemoryManager<BlockType>*)
+    # ~AbstractMemoryStructure()
+    # m_memoryManager: MemoryManager<BlockType>*
+}
+
+abstract class ImplicitAbstractMemoryStructure<DataType> {
+    - {static} INIT_CAPACITY: int = 10 <<const>>
+    + clear(): void <<override>>
+    + getCapacity(): size_t
+    + reserveCapacity(newCapacity: size_t): void
+    + operator=(other: ImplicitAbstractMemoryStructure&): ImplicitAbstractMemoryStructure&
+    # ImplicitAbstractMemoryStructure()
+    # ImplicitAbstractMemoryStructure(capacity: size_t, initBlocks: bool)
+    # ImplicitAbstractMemoryStructure(other: const ImplicitAbstractMemoryStructure&)
+    # ImplicitAbstractMemoryStructure(other: ImplicitAbstractMemoryStructure&&)
+    # assignUnsafe(other: const ImplicitAbstractMemoryStructure*): void
+    # assignSafe(other: const ImplicitAbstractMemoryStructure*): void
+    # equalsUnsafe(other: const ImplicitAbstractMemoryStructure*): bool <<const>>
+    # equalsSafe(other: const ImplicitAbstractMemoryStructure*): bool <<const>>
+    # getMemoryManager(): MemoryManagerType* <<const>>
+}
+
+class ExplicitAbstractMemoryStructure<BlockType> {
+    + ExplicitAbstractMemoryStructure()
+}
+
+AbstractMemoryType <|-- AbstractMemoryStructure
+AbstractMemoryStructure <|-- ImplicitAbstractMemoryStructure: "BlockType = MemoryBlock<DataType>"
+AbstractMemoryStructure <|-- ExplicitAbstractMemoryStructure
+
+AbstractMemoryStructure *-- MemoryManager
+MemoryManager <|-- SystemMemoryManager
+MemoryManager <|-- CompactMemoryManager
+CompactMemoryManager <|-- CompactOperationMemoryManager
+CompactOperationMemoryManager <|-- CompactMemoryTrivialManager
+CompactOperationMemoryManager <|-- CompactMemoryObjectManager
+
+
+@enduml

@@ -1,0 +1,105 @@
+@startuml hierarchy
+
+scale 2
+
+abstract class AbstractMemoryType
+hide AbstractMemoryType fields
+hide AbstractMemoryType methods
+
+abstract class Hierarchy<BlockType> {
+	+ <<virtual>> level(nod: const BlockType&): size_t <<const>>
+	+ {abstract} degree(node: const BlockType&): size_t <<const>>
+	+ <<virtual>> nodeCount(): size_t <<const>>
+	+ <<virtual>> nodeCount(node: const BlockType&): size_t <<const>>
+	+ {abstract} accessRoot(): BlockType* <<const>>
+	+ {abstract} accessParent(node: const BlockType&): BlockType* <<const>>
+	+ {abstract} accessSon(node: const BlockType&, sonOrder: size_t): BlockType* <<const>>
+	+ <<virtual>> isRoot(node: const BlockType&): bool <<const>>
+	+ <<virtual>> isNthSon(node: const BlockType&, sonOrder: size_t): bool <<const>>
+	+ <<virtual>> isLeaf(node: const BlockType&): bool <<const>>
+	+ <<virtual>> hasNthSon(node: const BlockType&, sonOrder: size_t): bool <<const>>
+	+ {abstract} emplaceRoot(): BlockType&
+	+ {abstract} changeRoot(newRoot: BlockType*): void
+	+ {abstract} emplaceSon(parent: BlockType&, sonOrder: size_t): BlockType&
+	+ {abstract} changeSon(parent: BlockType&, sonOrder: size_t, newSon: BlockType*): void
+	+ {abstract} removeSon(parent: BlockType&, sonOrder: size_t): void
+	+ processPreOrder(node: const BlockType*, operation: function): void <<const>>
+	+ processPostOrder(node: BlockType*, operation: function): void <<const>>
+	+ processLevelOrder(node: BlockType*, operation: function): void <<const>>
+	+ begin(): IteratorType
+	+ end(): IteratorType
+	+ beginPre(): PreOrderHierarchyIterator
+	+ endPre(): PreOrderHierarchyIterator
+	+ beginPost(): PostOrderHierarchyIterator
+	+ endPost(): PostOrderHierarchyIterator
+}
+
+abstract class KWayHierarchy<BlockType, K> {
+}
+
+abstract class BinaryHierarchy<BlockType> {
+	+ {static} LEFT_SON_INDEX: size_t = 0 <<const>>
+	+ {static} RIGHT_SON_INDEX: size_t = 1 <<const>>
+	+ accessLeftSon(node: const BlockType&): BlockType*
+	+ accessRightSon(node: const BlockType&): BlockType*
+	+ isLeftSon(node: const BlockType&): bool
+	+ isRightSon(node: const BlockType&): bool
+	+ hasLeftSon(node: const BlockType&): bool
+	+ hasRightSon(node: const BlockType&): bool
+	+ emplaceLeftSon(parent: BlockType&): BlockType&
+	+ emplaceRightSon(parent: BlockType&): BlockType&
+	+ changeLeftSon(parent: BlockType&, newSon: BlockType*): void
+	+ changeRightSon(parent: BlockType&, newSon: BlockType*): void
+	+ removeLeftSon(parent: BlockType&): void
+	+ removeRightSon(parent: BlockType&): void
+	+ processInOrder(node: const BlockType*, operation: function): void
+	+ begin(): IteratorType
+	+ end(): IteratorType
+}
+
+class DepthFirstIterator<BlockType> {
+	# m_hierarchy: Hierarchy<BlockType>*
+	# m_current: BlockType*
+	+ DepthFirstIterator(hierarchy: Hierarchy<BlockType>*, root: BlockType*)
+	+ operator==(other: const DepthFirstIterator&): bool
+	+ operator!=(other: const DepthFirstIterator&): bool
+	+ operator*(): DataType&
+	+ operator*(): const DataType&
+	# accessRightSibling(node: BlockType*): BlockType*
+	# accessLeftmost(node: BlockType*): BlockType*
+	# accessLeftmostSon(node: BlockType*): BlockType*
+}
+
+class PreOrderHierarchyIterator<BlockType> {
+	+ PreOrderHierarchyIterator(hierarchy: Hierarchy<BlockType>*, root: BlockType*)
+	+ operator++(): PreOrderHierarchyIterator&
+	+ operator++(int): PreOrderHierarchyIterator
+}
+
+class PostOrderHierarchyIterator<BlockType> {
+	+ PostOrderHierarchyIterator(hierarchy: Hierarchy<BlockType>*, root: BlockType*)
+	+ operator++(): PostOrderHierarchyIterator&
+	+ operator++(int): PostOrderHierarchyIterator
+}
+
+class InOrderHierarchyIterator<BlockType> {
+	+ InOrderHierarchyIterator(hierarchy: BinaryHierarchy<BlockType>*, root: BlockType*)
+	+ operator++(): InOrderHierarchyIterator&
+	+ operator++(int): InOrderHierarchyIterator
+	- isRightSon(node: BlockType*): bool
+	- getBinaryHierarchy(): BinaryHierarchy<BlockType>&
+}
+
+AbstractMemoryType   <|-- Hierarchy
+Hierarchy            +-r- DepthFirstIterator
+Hierarchy            +-r- PreOrderHierarchyIterator
+Hierarchy            +-r- PostOrderHierarchyIterator
+DepthFirstIterator   <|-- PreOrderHierarchyIterator
+DepthFirstIterator   <|-- PostOrderHierarchyIterator
+
+Hierarchy            <|-- KWayHierarchy
+KWayHierarchy        <|-- BinaryHierarchy
+BinaryHierarchy      +-r- InOrderHierarchyIterator
+DepthFirstIterator   <|-- InOrderHierarchyIterator
+
+@enduml

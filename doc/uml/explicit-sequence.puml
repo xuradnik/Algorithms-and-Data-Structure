@@ -1,0 +1,126 @@
+@startuml es
+
+scale 2
+
+abstract class AbstractMemoryType
+hide AbstractMemoryType fields
+hide AbstractMemoryType methods
+
+abstract class AbstractMemoryStructure<BlockType>
+hide AbstractMemoryStructure fields
+hide AbstractMemoryStructure methods
+
+abstract class ExplicitAMS<DataType>
+hide ExplicitAMS fields
+hide ExplicitAMS methods
+
+abstract class Sequence<BlockType>
+hide Sequence fields
+hide Sequence methods
+
+struct MemoryBlock<DataType> {
+    + data: DataType
+}
+
+struct SinglyLinkedSequenceBlock<DataType> {
+    + next : SinglyLinkedSequenceBlock<DataType>*
+}
+
+struct DoublyLinkedSequenceBlock<DataType> {
+    + next : DoublyLinkedSequenceBlock<DataType>*
+    + previous : DoublyLinkedSequenceBlock<DataType>*
+}
+
+class ExplicitSequence<BlockType> {
+    # m_first : BlockType*
+    # m_last : BlockType*
+    ..
+    + ExplicitSequence()
+    + ~ExplicitSequence()
+    ..
+    + clear() : void
+    ..
+    + calculateIndex(data : const BlockType&) : size_t
+    ..
+    + accessFirst() : BlockType* <<const>> <<override>>
+    + accessLast() : BlockType* <<const>> <<override>>
+    + access(index : size_t) : BlockType* <<const>> <<override>>
+    + accessNext(block : const BlockType&) : BlockType* <<const>> <<override>>
+    + accessPrevious(block : const BlockType&) : BlockType* <<const>> <<override>>
+    ..
+    + emplaceFirst() : BlockType& <<override>>
+    + emplaceLast() : BlockType& <<override>>
+    + emplace(index : size_t) : BlockType& <<override>>
+    + emplaceAfter(block : BlockType&) : BlockType& <<override>>
+    + emplaceBefore(block : BlockType&) : BlockType& <<override>>
+    ..
+    + removeFirst() : void <<override>>
+    + removeLast() : void <<override>>
+    + remove(index : size_t) : void <<override>>
+    + removeNext(block : BlockType&) : void <<override>>
+    + removePrevious(block : BlockType&) : void <<override>>
+    ..
+    + begin() : ExplicitSequenceIterator <<const>>
+    + end() : ExplicitSequenceIterator <<const>>
+    ..
+    # connectBlocks(previous : BlockType*, next : BlockType*) : void <<virtual>>
+    # disconnectBlock(block : BlockType*) : void <<virtual>>
+    ..
+    + operator=(other : const ExplicitSequence&) : ExplicitSequence&
+    # assignUnsafe(other : const ExplicitSequence*) : void
+    # assignSafe(other : const ExplicitSequence*) : void
+    # equalsUnsafe(other : const ExplicitSequence*) : bool
+    # equalsSafe(other : const ExplicitSequence*) : bool
+}
+
+class ExplicitSequenceIterator<BlockType> {
+    - m_position : BlockType*
+    ..
+    + ExplicitSequenceIterator(position : BlockType*)
+    ..
+    + operator++() : ExplicitSequenceIterator&
+    + operator++(int) : ExplicitSequenceIterator
+    + operator==(other : const ExplicitSequenceIterator&) : bool
+    + operator!=(other : const ExplicitSequenceIterator&) : bool
+    + operator*() : DataType&
+    + operator*() : const DataType&
+}
+
+class SinglyLinkedSequence<DataType> {
+    + SinglyLinkedSequence()
+    + SinglyLinkedSequence(other : const SinglyLinkedSequence&)
+    ..
+    + assign(other : const AbstractMemoryType&) : AbstractMemoryType& <<override>
+    + equals(other : const AbstractMemoryType&) : bool <<override>
+}
+
+class DoublyLinkedSequence<DataType> {
+    + DoublyLinkedSequence()
+    + DoublyLinkedSequence(other : const DoublyLinkedSequence&)
+    ..
+    + access(index : size_t) : BlockType*
+    + accessPrevious(block : const BlockType&) : BlockType*
+    ..
+    + removeFirst() : void
+    ..
+    + assign(other : const AbstractMemoryType&) : AbstractMemoryType& <<override>>
+    + equals(other : const AbstractMemoryType&) : bool <<override>>
+    ..
+    # connectBlocks(previous : BlockType*, next : BlockType*) : void <<override>>
+    # disconnectBlock(block : BlockType*) : void <<override>>
+}
+
+AbstractMemoryType        <|-- Sequence
+AbstractMemoryType        <|-- AbstractMemoryStructure
+AbstractMemoryStructure   <|-- ExplicitAMS
+Sequence                  <|-- ExplicitSequence
+ExplicitAMS               <|-- ExplicitSequence
+ExplicitSequence          +-r- ExplicitSequenceIterator
+ExplicitSequence          <|-- SinglyLinkedSequence
+ExplicitSequence          <|-- DoublyLinkedSequence
+SinglyLinkedSequenceBlock <.u. SinglyLinkedSequence
+DoublyLinkedSequenceBlock <.u. DoublyLinkedSequence
+MemoryBlock               <|-u- SinglyLinkedSequenceBlock
+MemoryBlock               <|-u- DoublyLinkedSequenceBlock
+
+@enduml

@@ -1,0 +1,136 @@
+@startuml eh
+
+scale 2
+
+abstract class AbstractMemoryType
+hide AbstractMemoryType fields
+hide AbstractMemoryType methods
+
+abstract class AbstractMemoryStructure<BlockType>
+hide AbstractMemoryStructure fields
+hide AbstractMemoryStructure methods
+
+abstract class ExplicitAMS<DataType>
+hide ExplicitAMS fields
+hide ExplicitAMS methods
+
+abstract class Hierarchy<BlockType>
+hide Hierarchy fields
+hide Hierarchy methods
+
+abstract class KWayHierarchy<BlockType, K>
+hide KWayHierarchy fields
+hide KWayHierarchy methods
+
+abstract class BinaryHierarchy<BlockType>
+hide BinaryHierarchy fields
+hide BinaryHierarchy methods
+
+struct MemoryBlock<DataType> {
+    + data: DataType
+}
+
+struct MultiWayExplicitHierarchyBlock<DataType> {
+    + parent: MultiWayExplicitHierarchyBlock*
+    + sons: IS<MultiWayExplicitHierarchyBlock*>
+}
+
+struct KWayExplicitHierarchyBlock<DataType, K> {
+    + parent: KWayExplicitHierarchyBlock*
+    + sons: IS<KWayExplicitHierarchyBlock*>
+}
+
+struct BinaryExplicitHierarchyBlock<DataType> {
+    + parent: BinaryExplicitHierarchyBlock*
+    + left: BinaryExplicitHierarchyBlock*
+    + right: BinaryExplicitHierarchyBlock*
+}
+
+class ExplicitHierarchy<BlockType> {
+    # m_root: BlockType*
+    + ExplicitHierarchy()
+    + clear(): void <color:#999999><<override>></color>
+    + isEmpty(): bool <color:#999999><<const>> <<override>></color>
+    + accessRoot(): BlockType* <color:#999999><<const>> <<override>></color>
+    + accessParent(node: const BlockType&): BlockType* <color:#999999><<const>> <<override>></color>
+    + emplaceRoot(): BlockType& <color:#999999><<override>></color>
+    + changeRoot(newRoot: BlockType*): void <color:#999999><<override>></color>
+    + operator=(other: const ExplicitHierarchy&): ExplicitHierarchy&
+    # assignSafe(other: const ExplicitHierarchy*): void
+    # assignUnsafe(other: const ExplicitHierarchy*): void
+    # equalsSafe(other: const ExplicitHierarchy*): bool <color:#999999><<const>></color>
+    # equalsUnsafe(other: const ExplicitHierarchy*): bool <color:#999999><<const>></color>
+}
+
+class MultiWayExplicitHierarchy<DataType> {
+    + MultiWayExplicitHierarchy()
+    + MultiWayExplicitHierarchy(other: const MultiWayExplicitHierarchy&)
+    + ~MultiWayExplicitHierarchy() <color:#999999><<override>></color>
+    + degree(node: const BlockType&): size_t <color:#999999><<const>> <<override>></color>
+    + accessSon(node: const BlockType&, sonOrder: size_t): BlockType* <color:#999999><<override>></color>
+    + emplaceSon(parent: BlockType&, sonOrder: size_t): BlockType& <color:#999999><<override>></color>
+    + changeSon(parent: BlockType&, sonOrder: size_t, newSon: BlockType*): void <color:#999999><<override>></color>
+    + removeSon(parent: BlockType&, sonOrder: size_t): void <color:#999999><<override>></color>
+    + assign(other: const AbstractMemoryType&): AbstractMemoryType& <color:#999999><<override>></color>
+    + equals(other: const AbstractMemoryType&): bool <color:#999999><<const>> <<override>></color>
+    + operator=(other: const MultiWayExplicitHierarchy&): MultiWayExplicitHierarchy&
+}
+
+class KWayExplicitHierarchy<DataType, K> {
+    + KWayExplicitHierarchy()
+    + KWayExplicitHierarchy(other: const KWayExplicitHierarchy&)
+    + ~KWayExplicitHierarchy() <color:#999999><<override>></color>
+    + degree(node: const BlockType&): size_t <color:#999999><<const>> <<override>></color>
+    + accessSon(node: const BlockType&, sonOrder: size_t): BlockType* <color:#999999><<override>></color>
+    + emplaceSon(parent: BlockType&, sonOrder: size_t): BlockType& <color:#999999><<override>></color>
+    + changeSon(parent: BlockType&, sonOrder: size_t, newSon: BlockType*): void <color:#999999><<override>></color>
+    + removeSon(parent: BlockType&, sonOrder: size_t): void <color:#999999><<override>></color>
+    + assign(other: const AbstractMemoryType&): AbstractMemoryType& <color:#999999><<override>></color>
+    + equals(other: const AbstractMemoryType&): bool <color:#999999><<const>> <<override>></color>
+}
+
+class BinaryExplicitHierarchy<DataType> {
+    + BinaryExplicitHierarchy()
+    + BinaryExplicitHierarchy(other: const BinaryExplicitHierarchy&)
+    + ~BinaryExplicitHierarchy()
+    + degree(node: const BlockType&): size_t <color:#999999><<const>> <<override>></color>
+    + accessSon(node: const BlockType&, sonOrder: size_t): BlockType* <color:#999999><<const>> <<override>></color>
+    + emplaceSon(parent: BlockType&, sonOrder: size_t): BlockType& <color:#999999><<override>></color>
+    + changeSon(parent: BlockType&, sonOrder: size_t, newSon: BlockType*): void <color:#999999><<override>></color>
+    + removeSon(parent: BlockType&, sonOrder: size_t): void <color:#999999><<override>></color>
+    + accessLeftSon(node: const BlockType&): BlockType* <color:#999999><<const>> <<override>></color>
+    + accessRightSon(node: const BlockType&): BlockType* <color:#999999><<const>> <<override>></color>
+    + isLeftSon(node: const BlockType&): bool <color:#999999><<const>> <<override>></color>
+    + isRightSon(node: const BlockType&): bool <color:#999999><<const>> <<override>></color>
+    + hasLeftSon(node: const BlockType&): bool <color:#999999><<const>> <<override>></color>
+    + hasRightSon(node: const BlockType&): bool <color:#999999><<const>> <<override>></color>
+    + emplaceLeftSon(parent: BlockType&): BlockType& <color:#999999><<override>></color>
+    + emplaceRightSon(parent: BlockType&): BlockType& <color:#999999><<override>></color>
+    + changeLeftSon(parent: BlockType&, newSon: BlockType*): void <color:#999999><<override>></color>
+    + changeRightSon(parent: BlockType&, newSon: BlockType*): void <color:#999999><<override>></color>
+    + removeLeftSon(parent: BlockType&): void <color:#999999><<override>></color>
+    + removeRightSon(parent: BlockType&): void <color:#999999><<override>></color>
+    + assign(other: const AbstractMemoryType&): AbstractMemoryType& <color:#999999><<override>></color>
+    + equals(other: const AbstractMemoryType&): bool <color:#999999><<const>> <<override>></color>
+}
+
+AbstractMemoryType        <|-- Hierarchy
+AbstractMemoryType        <|-- AbstractMemoryStructure
+AbstractMemoryStructure   <|-- ExplicitAMS
+Hierarchy                 <|-- ExplicitHierarchy
+Hierarchy                 <|-- KWayHierarchy
+Hierarchy                 <|-- BinaryHierarchy
+ExplicitAMS               <|-- ExplicitHierarchy
+MemoryBlock               <|-u- MultiWayExplicitHierarchyBlock
+MemoryBlock               <|-u- KWayExplicitHierarchyBlock
+MemoryBlock               <|-u- BinaryExplicitHierarchyBlock
+ExplicitHierarchy         <|-- MultiWayExplicitHierarchy
+MultiWayExplicitHierarchy ..> MultiWayExplicitHierarchyBlock
+KWayHierarchy             <|-- KWayExplicitHierarchy
+ExplicitHierarchy         <|-- KWayExplicitHierarchy
+KWayExplicitHierarchy     ..> KWayExplicitHierarchyBlock
+BinaryHierarchy           <|-- BinaryExplicitHierarchy
+ExplicitHierarchy         <|-- BinaryExplicitHierarchy
+BinaryExplicitHierarchy   ..> BinaryExplicitHierarchyBlock
+
+@enduml

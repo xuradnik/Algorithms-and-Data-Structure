@@ -1,0 +1,46 @@
+@startuml uml-hierarchy
+title Year-month-day hierarchy with sample data
+
+rectangle "v<sup>root</sup>\n(notional root)\nNode.value = 0" as ROOT <<root>>
+
+rectangle "v<sup>year</sup>\n2023\nNode.value = 2023" as Y23 <<year>>
+rectangle "v<sup>year</sup>\n2024\nNode.value = 2024" as Y24 <<year>>
+rectangle "v<sup>year</sup>\n2025\nNode.value = 2025" as Y25 <<year>>
+
+rectangle "v<sup>month</sup>\nOctober\nNode.value = 10" as M23_10 <<month>>
+rectangle "v<sup>month</sup>\nMay\nNode.value = 5" as M24_05 <<month>>
+rectangle "v<sup>month</sup>\nJanuary\nNode.value = 1" as M25_01 <<month>>
+
+rectangle "v<sup>day</sup>\n12 Oct 2023\nNode.value = 12\nImplicitList<const Accident*> (3)" as D23_10_12 <<day>>
+rectangle "v<sup>day</sup>\n15 May 2024\nNode.value = 15\nImplicitList<const Accident*> (5)" as D24_05_15 <<day>>
+rectangle "v<sup>day</sup>\n28 May 2024\nNode.value = 28\nImplicitList<const Accident*> (2)" as D24_05_28 <<day>>
+rectangle "v<sup>day</sup>\n3 Jan 2025\nNode.value = 3\nImplicitList<const Accident*> (1)" as D25_01_03 <<day>>
+
+rectangle "Accident*\n2023/10/12 08:15\nweather=fog_or_mist\njunction=crossroads\nvehicles=2 casualties=1" as A1 <<leaf>>
+rectangle "Accident*\n2023/10/12 17:30\nweather=raining_no_high_winds\nvehicles=3 casualties=2" as A2 <<leaf>>
+rectangle "Accident*\n2023/10/12 22:05\nweather=fine_no_high_winds\nvehicles=1 casualties=1" as A3 <<leaf>>
+
+rectangle "Accident*\n2024/05/15 06:30\nweather=fog_or_mist\njunction=t_or_staggered_junction\nvehicles=4 casualties=3" as B1 <<leaf>>
+rectangle "Accident*\n2024/05/15 09:10\nweather=fog_or_mist\nvehicles=2 casualties=1" as B2 <<leaf>>
+
+ROOT --> Y23
+ROOT --> Y24
+ROOT --> Y25
+
+Y23 --> M23_10
+Y24 --> M24_05
+Y25 --> M25_01
+
+M23_10 --> D23_10_12
+M24_05 --> D24_05_15
+M24_05 --> D24_05_28
+M25_01 --> D25_01_03
+
+D23_10_12 ..> A1 : pointer
+D23_10_12 ..> A2 : pointer
+D23_10_12 ..> A3 : pointer
+
+D24_05_15 ..> B1 : pointer
+D24_05_15 ..> B2 : pointer
+
+@enduml

@@ -1,0 +1,104 @@
+@startuml uml-cli
+title CLI and orchestration
+
+class Terminal {
+  + {static} clear() : void
+  + {static} setTextColor(c : Color) : void
+  + {static} resetTextColor() : void
+}
+
+enum Color {
+  Black
+  Red
+  Green
+  Yellow
+  Blue
+  Magenta
+  Cyan
+  White
+}
+
+class "CSV_Loader<T>" as CSV_Loader {
+  - m_data_frame : DataFrame<T>&
+  + CSV_Loader(path : filesystem::path, df : DataFrame<T>&)
+  - load_csv_data(path : filesystem::path) : void
+  - handle_date(data : Accident&, cell : string_view) : void
+  - handle_time(data : Accident&, cell : string_view) : void
+  - handle_weather_conditions(data : Accident&, cell : string_view) : void
+  - handle_junction_details(data : Accident&, cell : string_view) : void
+  - handle_collision_severity(data : Accident&, cell : string_view) : void
+  - handle_pedestrian_crossing(data : Accident&, cell : string_view) : void
+  - handle_day_of_week(data : Accident&, cell : string_view) : void
+}
+
+class Cli_Helper_Printer {
+  - m_os : ostream&
+  + procPrint : function<void(const Accident&)>
+  + Cli_Helper_Printer(os : ostream&)
+  + print_help_menu() : void
+  + print_filter_flags() : void
+  + print_data_meaning() : void
+}
+
+class Cli_Command_Logic {
+  - m_argc : int
+  - m_argv : char**
+  - m_loaded_data : bool
+  - m_data_frame : DataFrame<Accident>&
+  - m_filtered_data : vector<const Accident*>
+  - m_predicate : function<bool(const Accident&)>
+  - m_printer : const Cli_Helper_Printer&
+  - m_tree : optional<Data_Structure>
+  - m_current_block : Block*
+  - m_tree_depth : int
+  - m_date_table : Hash_Map_Data_Structure
+  - m_sorter : data_sorter<const Accident*>
+  - procInsertInto : lambda
+  - predTrue : lambda
+  - predHappenedBetween : lambda
+  - compareDateTime : lambda
+  - compareVehiclesAndCasualties : lambda
+  + filter_data_based(ss : stringstream&, ignore_missing : bool) : void
+  + print_all_data_filtered(ss : stringstream&) : void
+  + filter_data_based_date(ss : stringstream&) : void
+  + save_current_data_to_vector(ss : stringstream&) : void
+  + load_incoming_data(path : string&, check : bool) : void
+  + print_filtered_data() : void
+  + print_all_data() : void
+  + tree_navigate(ss : stringstream&) : void
+  + find_accidents_by_date_table(ss : stringstream&) : void
+  - parse_date_time_range(ss : stringstream&, ...) : void
+  - predConditions(accident : const Accident&, ...) : bool
+  - tree_print_current() : void
+  - sort_from_tree(ss : stringstream&) : void
+}
+
+class CommandLineInterface {
+  - m_p_is_running : bool*
+  - m_cli_printer : Cli_Helper_Printer
+  - m_cli_command_logic : Cli_Command_Logic
+  - m_os : ostream&
+  - m_data_frame : DataFrame<Accident>&
+  + CommandLineInterface(argc : int, args : char*[], os : ostream&, running : bool*, df : DataFrame<Accident>&)
+  + handle_user_input() : void
+  - load_data_function(ss : stringstream&) : void
+  - print_function(ss : stringstream&) : void
+}
+
+class "main()" as Main <<entry point>>
+
+Terminal ..> Color : uses
+Cli_Helper_Printer ..> Terminal : colored output
+CSV_Loader ..> Accident : produces
+Cli_Command_Logic *-- "1" Cli_Helper_Printer : reference
+Cli_Command_Logic *-- "1" Data_Structure : optional
+Cli_Command_Logic *-- "1" Hash_Map_Data_Structure
+Cli_Command_Logic *-- "1" data_sorter
+Cli_Command_Logic ..> CSV_Loader : on load
+CommandLineInterface *-- "1" Cli_Helper_Printer
+CommandLineInterface *-- "1" Cli_Command_Logic
+CommandLineInterface ..> DataFrame : reference
+Main --> CommandLineInterface : creates
+Main --> DataFrame : creates
+
+@enduml

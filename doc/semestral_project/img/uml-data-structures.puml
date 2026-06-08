@@ -1,0 +1,96 @@
+@startuml uml-data-structures
+title Custom data structures
+
+package "Custom classes" {
+
+  class "DataFrame<T>" as DataFrame {
+    - m_data : std::vector<T>
+    + DataFrame()
+    + ~DataFrame()
+    + relative_data_size(size : size_t) : void
+    + handle_incoming_data(data : T) : void
+    + execute<Iterator>(begin, end, predicate, processor) : void
+    + begin() : iterator
+    + end() : iterator
+  }
+
+  class Node <<struct>> {
+    + value : int
+    + accident_data : ImplicitList<const Accident*>
+    + operator==(other : Node) : bool
+  }
+
+  class HierarchyIterator {
+    - m_tree : const Data_Structure*
+    - m_block : Block*
+    - m_idx : size_t
+    - m_stack : ImplicitStack<Block*>
+    + operator*() : const Accident&
+    + operator++() : HierarchyIterator&
+    + operator==(o : HierarchyIterator) : bool
+    + operator!=(o : HierarchyIterator) : bool
+    - advance() : void
+  }
+
+  class Data_Structure {
+    - m_hierarchy_data : MultiWayExplicitHierarchy<Node>
+    + Data_Structure(df : DataFrame<Accident>&)
+    + access_root() : Block*
+    + go_up(b : Block*) : Block*
+    + go_down(b : Block*, idx : size_t) : Block*
+    + son_count(b : Block*) : size_t
+    + additional_data(from : Iterator, to : Iterator) : void
+    + hier_begin(start : Block*) : HierarchyIterator
+    + hier_end() : HierarchyIterator
+    + build_range(begin : Iterator, end : Iterator) : void
+    - build(df : DataFrame<Accident>&) : void
+    - find_son(parent : Block&, value : int) : Block*
+    - add_son(parent : Block&, value : int) : Block&
+  }
+
+  class AccidentBucket <<struct>> {
+    + accidents : ImplicitList<const Accident*>
+    + operator==(other : AccidentBucket) : bool
+    + operator!=(other : AccidentBucket) : bool
+  }
+
+  class Hash_Map_Data_Structure {
+    - m_date_buckets : HashTable<DateKey, AccidentBucket>
+    + clear() : void
+    + build(df : DataFrame<Accident>&) : void
+    + insert(accident : const Accident&) : void
+    + find(date : year_month_day) : const AccidentList*
+    + {static} parse_date(s : string_view) : optional<year_month_day>
+    + {static} make_date_key(date : year_month_day) : uint32_t
+    + {static} parse_int(text : string_view) : optional<int>
+  }
+
+  class "data_sorter<T>" as data_sorter {
+    + sort(vec : vector<T>&, compare : function<bool(T,T)>) : void
+    - merge_sort(vec : vector<T>&, compare, left : size_t, right : size_t) : void
+    - merge(vec : vector<T>&, compare, left : size_t, mid : size_t, right : size_t) : void
+  }
+}
+
+package "Reused from libds (headers only)" {
+  class "ImplicitList<T>" as ImplicitList <<libds>>
+  class "ImplicitStack<T>" as ImplicitStack <<libds>>
+  class "HashTable<K,V>" as HashTable <<libds>>
+  class "MultiWayExplicitHierarchy<T>" as MWH <<libds>>
+}
+
+class Accident <<struct>>
+
+DataFrame "1" *--> "*" Accident : owns
+Data_Structure *-- "1" MWH
+Data_Structure ..> Node
+Data_Structure ..> HierarchyIterator : produces
+HierarchyIterator ..> Node : iterates
+HierarchyIterator *-- "1" ImplicitStack : DFS stack
+Node *-- "1" ImplicitList : pointers to accidents
+Hash_Map_Data_Structure *-- "1" HashTable
+Hash_Map_Data_Structure ..> AccidentBucket
+AccidentBucket *-- "1" ImplicitList : pointers to accidents
+data_sorter ..> "1..*" Accident
+
+@enduml

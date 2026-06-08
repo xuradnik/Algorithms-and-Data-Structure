@@ -1,0 +1,32 @@
+@startuml uml-activity-execute
+title Universal algorithm: DataFrame<T>::execute(begin, end, predicate, processor)
+
+|Caller|
+start
+:Prepare the iterator range
+**from begin to end** (end exclusive)
+(e.g. df.begin()/end() or
+ hier_begin()/hier_end());
+:Prepare the **predicate**
+(lambda: bool(const T&));
+:Prepare the **processor**
+(lambda: void(const T&));
+:Call **execute(begin, end, predicate, processor)**;
+
+|DataFrame<T>::execute|
+:**it = begin**;
+
+while (it != end ?) is (yes)
+  :**element = *it**;
+  if (**predicate(element)**) then (true)
+    :**processor(element)**
+    (insert into the filtered structure,
+     print to output, ...);
+  else (false)
+  endif
+  :**++it**;
+endwhile (no)
+
+stop
+
+@enduml

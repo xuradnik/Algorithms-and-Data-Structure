@@ -1,0 +1,125 @@
+@startuml mm
+
+scale 2
+
+abstract class MemoryManager <BlockType> {
+    + <<virtual>> ~MemoryManager()
+    ..
+    + {abstract} allocateMemory(): BlockType*
+    + {abstract} releaseMemory(pointer: BlockType*): void
+    ..
+    + {abstract} getAllocatedBlockCount(): size_t <<const>>
+}
+
+abstract class CompactMemoryManager <BlockType> {
+    + {abstract} allocateMemoryAt(size_t index): BlockType*
+    + {abstract} releaseLast(): void
+    ..
+    + {abstract} getCapacity(): size_t <<const>>
+    ..
+    + expandCapacity(newCapacity: size_t): void
+    + expandCapacityBy(howMuch: size_t): void
+    + shrinkToFit(): void
+    + {abstract} clear(): void
+    ..
+    + {abstract} calculateAddress(data: const BlockType&): void* <<const>>
+    + {abstract} calculateIndex(data: const BlockType&): size_t <<const>>
+    + {abstract} getBlockAt(size_t index): BlockType&
+    + {abstract} getBlockAt(size_t index): const BlockType& <<const>>
+    + {abstract} swap(index1: size_t, index2: size_t): void
+    ..
+    + {abstract} assign(other: const CompactMemoryManager<BlockType>&): CompactMemoryManager<BlockType>&
+    + {abstract} equals(other: const CompactMemoryManager<BlockType>&): bool <<const>>
+    ..
+    # {abstract} changeCapacity(newCapacity: size_t): void
+}
+
+abstract class CompactOperationMemoryManager <BlockType> {
+    # m_base: BlockType*
+    # m_end: BlockType*
+    # m_limit: BlockType*
+    ..
+    # {static} INIT_SIZE: size_t = 4 <<const>>
+    ..
+    # CompactOperationMemoryManager()
+    # CompactOperationMemoryManager(size: size_t)
+    # CompactOperationMemoryManager(other: const CompactOperationMemoryManager<BlockType>&)
+    # CompactOperationMemoryManager(other: CompactOperationMemoryManager<BlockType>&&)
+    # ~CompactOperationMemoryManager() <<override>>
+    ..
+    + getAllocatedBlockCount(): size_t <<const>> <<override>>
+    + getCapacity(): size_t <<const>> <<override>>
+    ..
+    + calculateAddress(data: const BlockType&): void* <<const>> <<override>>
+    + calculateIndex(data: const BlockType&): size_t <<const>> <<override>>
+    + getBlockAt(size_t index): BlockType& <<override>>
+    + getBlockAt(size_t index): const BlockType& <<const>> <<override>>
+    + swap(index1: size_t, index2: size_t): void <<override>>
+    ..
+    + allocateMemory(): BlockType* <<override>>
+    ..
+    # calculateExpandedCapacity(): size_t <<const>>
+}
+
+class CompactMemoryTrivialManager <BlockType> {
+    + CompactMemoryTrivialManager()
+    + CompactMemoryTrivialManager(size: size_t)
+    + CompactMemoryTrivialManager(other: const CompactMemoryTrivialManager<BlockType>&)
+    + CompactMemoryTrivialManager(other: CompactMemoryTrivialManager<BlockType>&&)
+    ..
+    + allocateMemoryAt(size_t index): BlockType* <<override>>
+    + releaseMemory(BlockType* pointer): void <<override>>
+    + releaseLast(): void <<override>>
+    ..
+    + clear(): void <<override>>
+    ..
+    + assign(other: const CompactMemoryManager<BlockType>&): CompactMemoryManager<BlockType>& <<override>>
+    + equals(other: const CompactMemoryManager<BlockType>&): bool <<const>> <<override>>
+    ..
+    # changeCapacity(newCapacity: size_t): void <<override>>
+}
+
+class CompactMemoryObjectManager <BlockType> {
+    + CompactMemoryObjectManager()
+    + CompactMemoryObjectManager(size: size_t)
+    + CompactMemoryObjectManager(other: const CompactMemoryObjectManager<BlockType>&)
+    + CompactMemoryObjectManager(other: CompactMemoryObjectManager<BlockType>&&)
+    + ~CompactMemoryObjectManager() <<override>>
+    ..
+    + allocateMemoryAt(size_t index): BlockType* <<override>>
+    + releaseMemory(BlockType* pointer): void <<override>>
+    + releaseLast(): void <<override>>
+    ..
+    + assign(other: const CompactMemoryManager<BlockType>&): CompactMemoryManager<BlockType>& <<override>>
+    + equals(other: const CompactMemoryManager<BlockType>&): bool <<const>> <<override>> 
+    + clear(): void <<override>>
+    ..
+    # changeCapacity(newCapacity: size_t): void <<override>>
+}
+
+abstract class CompactExternalMemoryManager <BlockType> {
+}
+
+class SystemMemoryManager <BlockType> {
+    + SystemMemoryManager()
+    ..
+    + allocateMemory(): BlockType* <<override>>
+    + releaseMemory(BlockType* pointer): void <<override>>
+    ..
+    + getAllocatedBlockCount(): size_t <<const>> <<override>>
+    ..
+    - m_allocatedBlockCount: size_t
+}
+
+
+MemoryManager <|-- CompactMemoryManager
+MemoryManager <|-- SystemMemoryManager
+CompactMemoryManager <|-- CompactOperationMemoryManager
+CompactMemoryManager <|-- CompactExternalMemoryManager
+CompactOperationMemoryManager <|-- CompactMemoryTrivialManager
+CompactOperationMemoryManager <|-- CompactMemoryObjectManager
+
+hide CompactExternalMemoryManager fields
+hide CompactExternalMemoryManager methods
+
+@enduml

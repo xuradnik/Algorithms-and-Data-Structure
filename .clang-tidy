@@ -1,0 +1,25 @@
+---
+Checks: 'readability-identifier-naming'
+CheckOptions:
+  # 1. Classes and Structs -> PascalCase (MyEngineDevice)
+  - key:             readability-identifier-naming.ClassCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.StructCase
+    value:           CamelCase
+
+  # 2. Private Member Variables -> snake_case with m_ prefix
+  - key:             readability-identifier-naming.PrivateMemberCase
+    value:           lower_case
+  - key:             readability-identifier-naming.PrivateMemberPrefix
+    value:           m_
+
+  # 3. Function Parameters -> snake_case with _p suffix
+  - key:             readability-identifier-naming.ParameterCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ParameterSuffix
+    value:           _p
+
+  # 4. Global functions/methods -> camelBack (initWindow) or snake_case
+  - key:             readability-identifier-naming.FunctionCase
+    value:           camelBack
+...

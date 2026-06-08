@@ -1,0 +1,96 @@
+@startuml implicit_sequence_colored
+scale 2
+
+abstract class AbstractMemoryType
+hide AbstractMemoryType fields
+hide AbstractMemoryType methods
+
+abstract class AbstractMemoryStructure<BlockType>
+hide AbstractMemoryStructure fields
+hide AbstractMemoryStructure methods
+
+abstract class ImplicitAMS<DataType>
+hide ImplicitAMS fields
+hide ImplicitAMS methods
+
+abstract class Sequence<BlockType>
+hide Sequence fields
+hide Sequence methods
+
+class MemoryBlock<DataType> {
+    + data: <color:#267F99>DataType</color>
+    + <color:#AF00DB>operator==</color>(<color:#171480>other</color>: <color:#267F99>MemoryBlock~<DataType></color>): <color:#0000FF>bool</color>
+    + <color:#AF00DB>operator!=</color>(<color:#171480>other</color>: <color:#267F99>MemoryBlock~<DataType></color>): <color:#0000FF>bool</color>
+}
+
+class ImplicitSequence<DataType> {
+    + <color:#795E26>ImplicitSequence</color>()
+    + <color:#795E26>ImplicitSequence</color>(<color:#171480>capacity</color>: <color:#267F99>size_t</color>, <color:#171480>initBlocks</color>: <color:#0000FF>bool</color>)
+    + <color:#795E26>ImplicitSequence</color>(<color:#171480>other</color>: <color:#0000FF>const</color> <color:#267F99>ImplicitSequence</color>&)
+    + <color:#795E26>ImplicitSequence</color>(<color:#171480>other</color>: <color:#267F99>ImplicitSequence</color>&&)
+    ..
+    + <color:#795E26>calculateIndex</color>(<color:#171480>block</color>: <color:#0000FF>const</color> <color:#267F99>BlockType</color>&): <color:#267F99>size_t</color>
+    ..
+    + <color:#795E26>accessFirst</color>(): <color:#267F99>BlockType</color>* <<const>> <<override>>
+    + <color:#795E26>accessLast</color>(): <color:#267F99>BlockType</color>* <<const>> <<override>>
+    + <color:#795E26>access</color>(<color:#171480>index</color>: <color:#267F99>size_t</color>): <color:#267F99>BlockType</color>* <<const>> <<override>>
+    + <color:#795E26>accessNext</color>(<color:#171480>block</color>: <color:#0000FF>const</color> <color:#267F99>BlockType</color>&): <color:#267F99>BlockType</color>* <<const>> <<override>>
+    + <color:#795E26>accessPrevious</color>(<color:#171480>block</color>: <color:#0000FF>const</color> <color:#267F99>BlockType</color>&): <color:#267F99>BlockType</color>* <<const>> <<override>>
+    ..
+    + <color:#795E26>emplaceFirst</color>(): <color:#267F99>BlockType</color>& <<override>>
+    + <color:#795E26>emplaceLast</color>(): <color:#267F99>BlockType</color>& <<override>>
+    + <color:#795E26>emplace</color>(<color:#171480>index</color>: <color:#267F99>size_t</color>): <color:#267F99>BlockType</color>& <<override>>
+    + <color:#795E26>emplaceAfter</color>(<color:#171480>block</color>: <color:#267F99>BlockType</color>&): <color:#267F99>BlockType</color>& <<override>>
+    + <color:#795E26>emplaceBefore</color>(<color:#171480>block</color>: <color:#267F99>BlockType</color>&): <color:#267F99>BlockType</color>& <<override>>
+    ..
+    + <color:#795E26>removeFirst</color>(): <color:#0000FF>void</color> <<override>>
+    + <color:#795E26>removeLast</color>(): <color:#0000FF>void</color> <<override>>
+    + <color:#795E26>remove</color>(<color:#171480>index</color>: <color:#267F99>size_t</color>): <color:#0000FF>void</color> <<override>>
+    + <color:#795E26>removeNext</color>(<color:#171480>block</color>: <color:#267F99>BlockType</color>&): <color:#0000FF>void</color> <<override>>
+    + <color:#795E26>removePrevious</color>(<color:#171480>block</color>: <color:#267F99>BlockType</color>&): <color:#0000FF>void</color> <<override>>
+    ..
+    + <color:#795E26>assign</color>(<color:#171480>other</color>: <color:#0000FF>const</color> <color:#267F99>AbstractMemoryType</color>&): <color:#267F99>AbstractMemoryType</color>& <<override>>
+    + <color:#795E26>equals</color>(<color:#171480>other</color>: <color:#0000FF>const</color> <color:#267F99>AbstractMemoryType</color>&): <color:#0000FF>bool</color> <<const>> <<override>>
+    + <color:#AF00DB>operator=</color>(<color:#171480>other</color>: <color:#0000FF>const</color> <color:#267F99>ImplicitSequence</color>&): <color:#267F99>ImplicitSequence</color>&
+    ..
+    + <<virtual>> <color:#795E26>indexOfNext</color>(<color:#171480>currentIndex</color>: <color:#267F99>size_t</color>): <color:#267F99>size_t</color>
+    + <<virtual>> <color:#795E26>indexOfPrevious</color>(<color:#171480>currentIndex</color>: <color:#267F99>size_t</color>): <color:#267F99>size_t</color>
+    ..
+    + <color:#795E26>begin</color>(): <color:#267F99>IteratorType</color> <<const>>
+    + <color:#795E26>end</color>(): <color:#267F99>IteratorType</color> <<const>>
+}
+
+class ImplicitSequenceIterator<DataType> {
+    - m_block: <color:#267F99>MemoryBlock~<DataType></color>*
+    ..
+    + <color:#795E26>ImplicitSequenceIterator</color>(<color:#171480>block</color>: <color:#267F99>MemoryBlock~<DataType></color>*)
+    ..
+    + <color:#AF00DB>operator++</color>(): <color:#267F99>ImplicitSequenceIterator</color>&
+    + <color:#AF00DB>operator++</color>(<color:#0000FF>int</color>): <color:#267F99>ImplicitSequenceIterator</color>
+    + <color:#AF00DB>operator==</color>(<color:#171480>other</color>: <color:#0000FF>const</color> <color:#267F99>ImplicitSequenceIterator</color>&): <color:#0000FF>bool</color>
+    + <color:#AF00DB>operator!=</color>(<color:#171480>other</color>: <color:#0000FF>const</color> <color:#267F99>ImplicitSequenceIterator</color>&): <color:#0000FF>bool</color>
+    + <color:#AF00DB>operator*</color>(): <color:#267F99>DataType</color>&
+    + <color:#AF00DB>operator*</color>(): <color:#0000FF>const</color> <color:#267F99>DataType</color>&
+}
+
+class CyclicImplicitSequence<DataType> {
+    + <color:#795E26>CyclicImplicitSequence</color>()
+    + <color:#795E26>CyclicImplicitSequence</color>(<color:#171480>initSize</color>: <color:#267F99>size_t</color>, <color:#171480>initBlocks</color>: <color:#0000FF>bool</color>)
+    ..
+    + <color:#795E26>indexOfNext</color>(<color:#171480>currentIndex</color>: <color:#267F99>size_t</color>): <color:#267F99>size_t</color>
+    + <color:#795E26>indexOfPrevious</color>(<color:#171480>currentIndex</color>: <color:#267F99>size_t</color>): <color:#267F99>size_t</color>
+    ..
+    + <color:#795E26>assign</color>(<color:#171480>other</color>: <color:#0000FF>const</color> <color:#267F99>AbstractMemoryType</color>&): <color:#267F99>AbstractMemoryType</color>&
+    + <color:#795E26>equals</color>(<color:#171480>other</color>: <color:#0000FF>const</color> <color:#267F99>AbstractMemoryType</color>&): <color:#0000FF>bool</color>
+}
+
+AbstractMemoryType      <|-- AbstractMemoryStructure
+AbstractMemoryType      <|-- Sequence
+AbstractMemoryStructure <|-- ImplicitAMS
+ImplicitAMS             <|-- ImplicitSequence
+Sequence                <|-- ImplicitSequence: "BlockType = MemoryBlock<DataType>"
+ImplicitSequence        <|-- CyclicImplicitSequence
+ImplicitSequence        +-- ImplicitSequenceIterator
+MemoryBlock             <.l. ImplicitSequence
+
+@enduml

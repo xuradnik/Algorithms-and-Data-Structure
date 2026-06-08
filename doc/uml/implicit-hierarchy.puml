@@ -1,0 +1,83 @@
+@startuml implicit-hierarchy
+
+scale 2
+
+skinparam note {
+    BackgroundColor #FDF2F1
+    BorderColor #A93226
+    FontColor #A93226
+}
+
+abstract class AbstractMemoryType
+hide AbstractMemoryType fields
+hide AbstractMemoryType methods
+
+abstract class AbstractMemoryStructure<BlockType>
+hide AbstractMemoryStructure fields
+hide AbstractMemoryStructure methods
+
+abstract class ImplicitAMS<DataType>
+hide ImplicitAMS fields
+hide ImplicitAMS methods
+
+abstract class Hierarchy<BlockType>
+hide Hierarchy fields
+hide Hierarchy methods
+
+
+abstract class KWayHierarchy<BlockType, K>
+hide KWayHierarchy fields
+hide KWayHierarchy methods
+
+abstract class BinaryHierarchy<BlockType>
+hide BinaryHierarchy fields
+hide BinaryHierarchy methods
+
+class ImplicitHierarchy<DataType, K> {
+    + ImplicitHierarchy()
+    + ImplicitHierarchy(other : const ImplicitHierarchy&)
+    + level(node : const BlockType&) : size_t
+    + level(index : size_t) : size_t
+    + degree(node : const BlockType&) : size_t
+    + degree(index : size_t) : size_t
+    + nodeCount() : size_t
+    + nodeCount(node : const BlockType&) : size_t
+    + accessRoot() : BlockType*
+    + accessParent(node : const BlockType&) : BlockType*
+    + accessSon(node : const BlockType&, sonOrder : size_t) : BlockType*
+    + accessLastLeaf() : BlockType*
+    + <color:#A93226>emplaceRoot</color>() : BlockType&
+    + <color:#A93226>changeRoot</color>(newRoot : BlockType*) : void
+    + <color:#A93226>emplaceSon</color>(parent : BlockType&, sonOrder : size_t) : BlockType&
+    + <color:#A93226>changeSon</color>(parent : BlockType&, sonOrder : size_t, newSon : BlockType*) : void
+    + <color:#A93226>removeSon</color>(parent : BlockType&, sonOrder : size_t) : void
+    + emplaceLastLeaf() : BlockType&
+    + removeLastLeaf() : void
+    + indexOfParent(node : const BlockType&) : size_t
+    + indexOfParent(index : size_t) : size_t
+    + indexOfSon(node : const BlockType&, sonOrder : size_t) : size_t
+    + indexOfSon(parentIndex : size_t, sonOrder : size_t) : size_t
+    + assign(other : const AbstractMemoryType&) : AbstractMemoryType&
+    + equals(other : const AbstractMemoryType&) : bool
+    + operator=(other : const ImplicitHierarchy&) : ImplicitHierarchy&
+}
+
+class BinaryImplicitHierarchy<DataType> {
+}
+
+note left of ImplicitHierarchy
+    Unsupported operations
+end note
+
+
+AbstractMemoryType      <|-- AbstractMemoryStructure
+AbstractMemoryType      <|-- Hierarchy
+AbstractMemoryStructure <|-- ImplicitAMS
+Hierarchy               <|-- KWayHierarchy
+KWayHierarchy           <|-- ImplicitHierarchy
+KWayHierarchy           <|-- BinaryHierarchy
+ImplicitAMS             <|-- ImplicitHierarchy
+BinaryHierarchy         <|-- BinaryImplicitHierarchy
+ImplicitHierarchy       <|-- BinaryImplicitHierarchy
+
+@enduml

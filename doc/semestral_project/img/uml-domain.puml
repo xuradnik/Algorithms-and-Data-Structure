@@ -1,0 +1,78 @@
+@startuml uml-domain
+title Domain model - Accident and enumerations
+
+enum Weather {
+  unmarked_data
+  fine_no_high_winds
+  raining_no_high_winds
+  snowing_no_high_winds
+  fine_high_winds
+  raining_high_winds
+  snowing_high_winds
+  fog_or_mist
+  other
+  unknown
+}
+
+enum Junction {
+  data_missing_or_out_of_range
+  not_at_junction_or_within_20_meters
+  t_or_staggered_junction
+  crossroads
+  junction_with_more_than_four_arms_not_roundabout
+  private_drive_or_entrence
+  unknown
+}
+
+enum Collision_Severity {
+  killed
+  serious
+  slight
+  unknown
+}
+
+enum Pedestrian_Crossing {
+  data_missing_or_out_of_range
+  no_physical_crossing_facility_within_50m
+  human_crossing_control_by_school_crossing_patrol
+  human_crossing_control_by_other_authorised_person
+  zebra_crossing
+  pedestrian_light_crossing
+  pedestrian_phase_at_traffic_signal
+  footbridge_or_subway
+  central_refuge
+  unknown
+}
+
+enum Day_Of_Week {
+  data_missing_or_out_of_range
+  sunday
+  monday
+  tuesday
+  wednesday
+  thursday
+  friday
+  saturday
+}
+
+class Accident <<struct>> {
+  + time : std::chrono::minutes
+  + date : std::chrono::year_month_day
+  + collision_year : uint16_t
+  + speed_limit : uint16_t
+  + number_of_vehicles : uint8_t
+  + number_of_casualties : uint8_t
+  + weather_conditions : Weather
+  + junction_detail : Junction
+  + collision_severity : Collision_Severity
+  + pedestrian_crossing : Pedestrian_Crossing
+  + day_of_week : Day_Of_Week
+}
+
+Accident --> Weather
+Accident --> Junction
+Accident --> Collision_Severity
+Accident --> Pedestrian_Crossing
+Accident --> Day_Of_Week
+
+@enduml
