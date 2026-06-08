@@ -6,6 +6,8 @@ Coursework for **Algorithms and Data Structures:** a from-scratch C++ data struc
 
 The semestral project documentation is shown below in the English version (auto-generated). Downloadable PDFs: [English](doc/semestral_project/documentation.en.pdf) · [Slovak original](doc/semestral_project/documentation.pdf).
 
+**Dataset:** the UK road accident CSV files are not committed (they are large). Download them from the source — the Department for Transport *Road Safety Data* on [data.gov.uk](https://www.data.gov.uk/dataset/cb7ae6f0-4be6-4935-9277-47e5ce24a11f/road-accidents-safety-data) (files `dft-road-casualty-statistics-collision-YYYY.csv`).
+
 ---
 
 ## Semestral project documentation *(auto translated to English)*
